@@ -51,6 +51,14 @@ public:
 
   /**! The magnetic field magnitude in uTesla */
   float mag_field = 50;
+
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+  /**! The 3x3 matrix for accelerometer alignment calibration (unitless) */
+  float accel_align[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+  /**! The 3x3 matrix for gyroscope alignment calibration (unitless) */
+  float gyro_align[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+#endif
 };
 
 #ifdef ADAFRUIT_SENSOR_CALIBRATION_USE_EEPROM

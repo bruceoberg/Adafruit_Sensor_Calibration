@@ -1,3 +1,4 @@
+#define ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
 #include "Adafruit_Sensor_Calibration.h"
 
 // select either EEPROM or SPI FLASH storage:
@@ -55,10 +56,21 @@ void setup() {
   cal.accel_zerog[1] = -0.04;
   cal.accel_zerog[2] = 0.15;
 
+  // accel_align and gyro_align are 3x3 correction matrices (row-major).
+  // Identity = no correction. These example values represent a small
+  // misalignment -- replace with values from your calibration procedure.
+  cal.accel_align[0] = 1.000; cal.accel_align[1] = 0.012; cal.accel_align[2] = -0.008;
+  cal.accel_align[3] = 0.012; cal.accel_align[4] = 1.000; cal.accel_align[5] =  0.005;
+  cal.accel_align[6] = -0.008; cal.accel_align[7] = 0.005; cal.accel_align[8] = 1.000;
+
+  cal.gyro_align[0] = 1.000; cal.gyro_align[1] = -0.007; cal.gyro_align[2] =  0.003;
+  cal.gyro_align[3] = -0.007; cal.gyro_align[4] =  1.000; cal.gyro_align[5] =  0.009;
+  cal.gyro_align[6] =  0.003; cal.gyro_align[7] =  0.009; cal.gyro_align[8] =  1.000;
+
   if (! cal.saveCalibration()) {
     Serial.println("**WARNING** Couldn't save calibration");
   } else {
-    Serial.println("Wrote calibration");    
+    Serial.println("Wrote calibration");
   }
 
   cal.printSavedCalibration();

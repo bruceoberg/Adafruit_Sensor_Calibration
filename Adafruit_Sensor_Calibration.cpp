@@ -47,10 +47,32 @@ bool Adafruit_Sensor_Calibration::calibrate(sensors_event_t &event) {
     event.gyro.x -= gyro_zerorate[0];
     event.gyro.y -= gyro_zerorate[1];
     event.gyro.z -= gyro_zerorate[2];
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+    float gx = event.gyro.x;
+    float gy = event.gyro.y;
+    float gz = event.gyro.z;
+    event.gyro.x =
+        gx * gyro_align[0] + gy * gyro_align[1] + gz * gyro_align[2];
+    event.gyro.y =
+        gx * gyro_align[3] + gy * gyro_align[4] + gz * gyro_align[5];
+    event.gyro.z =
+        gx * gyro_align[6] + gy * gyro_align[7] + gz * gyro_align[8];
+#endif
   } else if (event.type == SENSOR_TYPE_ACCELEROMETER) {
     event.acceleration.x -= accel_zerog[0];
     event.acceleration.y -= accel_zerog[1];
     event.acceleration.z -= accel_zerog[2];
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+    float ax = event.acceleration.x;
+    float ay = event.acceleration.y;
+    float az = event.acceleration.z;
+    event.acceleration.x =
+        ax * accel_align[0] + ay * accel_align[1] + az * accel_align[2];
+    event.acceleration.y =
+        ax * accel_align[3] + ay * accel_align[4] + az * accel_align[5];
+    event.acceleration.z =
+        ax * accel_align[6] + ay * accel_align[7] + az * accel_align[8];
+#endif
   } else {
     return false;
   }

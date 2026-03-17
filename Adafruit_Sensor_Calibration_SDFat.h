@@ -37,7 +37,7 @@ public:
 private:
   FatFileSystem *theFS = NULL;
   const char *_cal_filename = NULL;
-  StaticJsonDocument<512> calibJSON;
+  StaticJsonDocument<1024> calibJSON;
 };
 
 #endif

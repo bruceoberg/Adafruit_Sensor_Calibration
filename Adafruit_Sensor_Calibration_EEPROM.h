@@ -9,6 +9,12 @@
 
 #define EEPROM_CAL_SIZE 68
 
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#define EEPROM_ALIGN_CAL_SIZE 76
+#define EEPROM_ALIGN_CAL_MAGIC_0 0xAA
+#define EEPROM_ALIGN_CAL_MAGIC_1 0xC0
+#endif
+
 /**!  @brief Class for managing storing calibration in internal EEPROM memory
  * **/
 class Adafruit_Sensor_Calibration_EEPROM : public Adafruit_Sensor_Calibration {
