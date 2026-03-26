@@ -47,7 +47,7 @@ bool Adafruit_Sensor_Calibration::calibrate(sensors_event_t &event) {
     event.gyro.x -= gyro_zerorate[0];
     event.gyro.y -= gyro_zerorate[1];
     event.gyro.z -= gyro_zerorate[2];
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
     float gx = event.gyro.x;
     float gy = event.gyro.y;
     float gz = event.gyro.z;
@@ -59,7 +59,7 @@ bool Adafruit_Sensor_Calibration::calibrate(sensors_event_t &event) {
     event.acceleration.x -= accel_zerog[0];
     event.acceleration.y -= accel_zerog[1];
     event.acceleration.z -= accel_zerog[2];
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
     float ax = event.acceleration.x;
     float ay = event.acceleration.y;
     float az = event.acceleration.z;

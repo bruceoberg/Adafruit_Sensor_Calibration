@@ -55,24 +55,49 @@ bool Adafruit_Sensor_Calibration_EEPROM::saveCalibration(void) {
     EEPROM.write(a + ee_addr, buf[a]);
   }
 
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
-  uint8_t align_buf[EEPROM_ALIGN_CAL_SIZE];
-  memset(align_buf, 0, EEPROM_ALIGN_CAL_SIZE);
-  align_buf[0] = EEPROM_ALIGN_CAL_MAGIC_0;
-  align_buf[1] = EEPROM_ALIGN_CAL_MAGIC_1;
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
+  {
+    uint8_t align_buf[EEPROM_ACCEL_ALIGN_CAL_SIZE];
+    memset(align_buf, 0, EEPROM_ACCEL_ALIGN_CAL_SIZE);
+    align_buf[0] = EEPROM_ACCEL_ALIGN_CAL_MAGIC_0;
+    align_buf[1] = EEPROM_ACCEL_ALIGN_CAL_MAGIC_1;
 
-  memcpy(align_buf + 2, accel_align, 9 * 4);
-  memcpy(align_buf + 2 + 9 * 4, gyro_align, 9 * 4);
+    memcpy(align_buf + 2, accel_align, 9 * 4);
 
-  uint16_t align_crc = 0xFFFF;
-  for (uint16_t i = 0; i < EEPROM_ALIGN_CAL_SIZE - 2; i++) {
-    align_crc = crc16_update(align_crc, align_buf[i]);
+    uint16_t align_crc = 0xFFFF;
+    for (uint16_t i = 0; i < EEPROM_ACCEL_ALIGN_CAL_SIZE - 2; i++) {
+      align_crc = crc16_update(align_crc, align_buf[i]);
+    }
+    align_buf[EEPROM_ACCEL_ALIGN_CAL_SIZE - 2] = align_crc & 0xFF;
+    align_buf[EEPROM_ACCEL_ALIGN_CAL_SIZE - 1] = align_crc >> 8;
+
+    for (uint16_t a = 0; a < EEPROM_ACCEL_ALIGN_CAL_SIZE; a++) {
+      EEPROM.write(a + ee_addr + EEPROM_CAL_SIZE, align_buf[a]);
+    }
   }
-  align_buf[EEPROM_ALIGN_CAL_SIZE - 2] = align_crc & 0xFF;
-  align_buf[EEPROM_ALIGN_CAL_SIZE - 1] = align_crc >> 8;
+#endif
 
-  for (uint16_t a = 0; a < EEPROM_ALIGN_CAL_SIZE; a++) {
-    EEPROM.write(a + ee_addr + EEPROM_CAL_SIZE, align_buf[a]);
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
+  {
+    uint8_t align_buf[EEPROM_GYRO_ALIGN_CAL_SIZE];
+    memset(align_buf, 0, EEPROM_GYRO_ALIGN_CAL_SIZE);
+    align_buf[0] = EEPROM_GYRO_ALIGN_CAL_MAGIC_0;
+    align_buf[1] = EEPROM_GYRO_ALIGN_CAL_MAGIC_1;
+
+    memcpy(align_buf + 2, gyro_align, 9 * 4);
+
+    uint16_t align_crc = 0xFFFF;
+    for (uint16_t i = 0; i < EEPROM_GYRO_ALIGN_CAL_SIZE - 2; i++) {
+      align_crc = crc16_update(align_crc, align_buf[i]);
+    }
+    align_buf[EEPROM_GYRO_ALIGN_CAL_SIZE - 2] = align_crc & 0xFF;
+    align_buf[EEPROM_GYRO_ALIGN_CAL_SIZE - 1] = align_crc >> 8;
+
+    for (uint16_t a = 0; a < EEPROM_GYRO_ALIGN_CAL_SIZE; a++) {
+      EEPROM.write(
+          a + ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE,
+          align_buf[a]);
+    }
   }
 #endif
 
@@ -123,25 +148,43 @@ bool Adafruit_Sensor_Calibration_EEPROM::loadCalibration(void) {
   mag_softiron[7] = offsets[15];
   mag_softiron[8] = offsets[12];
 
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
   {
-    uint8_t align_buf[EEPROM_ALIGN_CAL_SIZE];
+    uint8_t align_buf[EEPROM_ACCEL_ALIGN_CAL_SIZE];
 
     uint16_t align_crc = 0xFFFF;
-    for (uint16_t a = 0; a < EEPROM_ALIGN_CAL_SIZE; a++) {
+    for (uint16_t a = 0; a < EEPROM_ACCEL_ALIGN_CAL_SIZE; a++) {
       align_buf[a] = EEPROM.read(a + ee_addr + EEPROM_CAL_SIZE);
       align_crc = crc16_update(align_crc, align_buf[a]);
     }
 
-    if (align_crc != 0 || align_buf[0] != EEPROM_ALIGN_CAL_MAGIC_0 ||
-        align_buf[1] != EEPROM_ALIGN_CAL_MAGIC_1) {
-      // Reset to identity
+    if (align_crc != 0 || align_buf[0] != EEPROM_ACCEL_ALIGN_CAL_MAGIC_0 ||
+        align_buf[1] != EEPROM_ACCEL_ALIGN_CAL_MAGIC_1) {
       float identity[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
       memcpy(accel_align, identity, 9 * 4);
-      memcpy(gyro_align, identity, 9 * 4);
     } else {
       memcpy(accel_align, align_buf + 2, 9 * 4);
-      memcpy(gyro_align, align_buf + 2 + 9 * 4, 9 * 4);
+    }
+  }
+#endif
+
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
+  {
+    uint8_t align_buf[EEPROM_GYRO_ALIGN_CAL_SIZE];
+
+    uint16_t align_crc = 0xFFFF;
+    for (uint16_t a = 0; a < EEPROM_GYRO_ALIGN_CAL_SIZE; a++) {
+      align_buf[a] = EEPROM.read(
+          a + ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE);
+      align_crc = crc16_update(align_crc, align_buf[a]);
+    }
+
+    if (align_crc != 0 || align_buf[0] != EEPROM_GYRO_ALIGN_CAL_MAGIC_0 ||
+        align_buf[1] != EEPROM_GYRO_ALIGN_CAL_MAGIC_1) {
+      float identity[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+      memcpy(gyro_align, identity, 9 * 4);
+    } else {
+      memcpy(gyro_align, align_buf + 2, 9 * 4);
     }
   }
 #endif
@@ -164,10 +207,10 @@ bool Adafruit_Sensor_Calibration_EEPROM::printSavedCalibration(void) {
   }
   Serial.println(F("\n------------"));
 
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
   Serial.println(F("------------"));
   for (uint16_t a = ee_addr + EEPROM_CAL_SIZE;
-       a < ee_addr + EEPROM_CAL_SIZE + EEPROM_ALIGN_CAL_SIZE; a++) {
+       a < ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE; a++) {
     uint8_t c = EEPROM.read(a);
     Serial.print("0x");
     if (c < 0x10)
@@ -175,6 +218,26 @@ bool Adafruit_Sensor_Calibration_EEPROM::printSavedCalibration(void) {
     Serial.print(c, HEX);
     Serial.print(", ");
     if ((a - ee_addr - EEPROM_CAL_SIZE) % 16 == 15) {
+      Serial.println();
+    }
+  }
+  Serial.println(F("\n------------"));
+#endif
+
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
+  Serial.println(F("------------"));
+  for (uint16_t a = ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE;
+       a < ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE +
+               EEPROM_GYRO_ALIGN_CAL_SIZE;
+       a++) {
+    uint8_t c = EEPROM.read(a);
+    Serial.print("0x");
+    if (c < 0x10)
+      Serial.print('0');
+    Serial.print(c, HEX);
+    Serial.print(", ");
+    if ((a - ee_addr - EEPROM_CAL_SIZE - EEPROM_ACCEL_ALIGN_CAL_SIZE) % 16 ==
+        15) {
       Serial.println();
     }
   }

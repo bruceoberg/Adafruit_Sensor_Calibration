@@ -1,4 +1,5 @@
-#define ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#define ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
+#define ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
 #include "Adafruit_Sensor_Calibration.h"
 
 // select either EEPROM or SPI FLASH storage:

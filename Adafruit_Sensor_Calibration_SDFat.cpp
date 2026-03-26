@@ -120,11 +120,13 @@ bool Adafruit_Sensor_Calibration_SDFat::saveCalibration(void) {
   for (int i = 0; i < 3; i++) {
     accel_zerog_data.add(accel_zerog[i]);
   }
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
   JsonArray accel_align_data = root.createNestedArray("accel_align");
   for (int i = 0; i < 9; i++) {
     accel_align_data.add(accel_align[i]);
   }
+#endif
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
   JsonArray gyro_align_data = root.createNestedArray("gyro_align");
   for (int i = 0; i < 9; i++) {
     gyro_align_data.add(gyro_align[i]);
@@ -213,7 +215,7 @@ bool Adafruit_Sensor_Calibration_SDFat::loadCalibration(void) {
     accel_zerog[i] = calibJSON["accel_zerog"][i] | 0.0;
   }
 
-#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_GYRO_ALIGN
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_ACCEL_ALIGN
   for (int i = 0; i < 9; i++) {
     float def = 0;
     if (i == 0 || i == 4 || i == 8) {
@@ -221,6 +223,8 @@ bool Adafruit_Sensor_Calibration_SDFat::loadCalibration(void) {
     }
     accel_align[i] = calibJSON["accel_align"][i] | def;
   }
+#endif
+#ifdef ADAFRUIT_SENSOR_CALIBRATION_GYRO_ALIGN
   for (int i = 0; i < 9; i++) {
     float def = 0;
     if (i == 0 || i == 4 || i == 8) {
