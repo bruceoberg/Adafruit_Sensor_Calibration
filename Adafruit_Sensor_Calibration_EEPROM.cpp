@@ -94,9 +94,8 @@ bool Adafruit_Sensor_Calibration_EEPROM::saveCalibration(void) {
     align_buf[EEPROM_GYRO_ALIGN_CAL_SIZE - 1] = align_crc >> 8;
 
     for (uint16_t a = 0; a < EEPROM_GYRO_ALIGN_CAL_SIZE; a++) {
-      EEPROM.write(
-          a + ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE,
-          align_buf[a]);
+      EEPROM.write(a + ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE,
+                   align_buf[a]);
     }
   }
 #endif
@@ -174,8 +173,8 @@ bool Adafruit_Sensor_Calibration_EEPROM::loadCalibration(void) {
 
     uint16_t align_crc = 0xFFFF;
     for (uint16_t a = 0; a < EEPROM_GYRO_ALIGN_CAL_SIZE; a++) {
-      align_buf[a] = EEPROM.read(
-          a + ee_addr + EEPROM_CAL_SIZE + EEPROM_ACCEL_ALIGN_CAL_SIZE);
+      align_buf[a] = EEPROM.read(a + ee_addr + EEPROM_CAL_SIZE +
+                                 EEPROM_ACCEL_ALIGN_CAL_SIZE);
       align_crc = crc16_update(align_crc, align_buf[a]);
     }
 
